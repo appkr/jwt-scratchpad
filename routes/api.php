@@ -13,6 +13,23 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('tokens/create', [
+    'as' => 'tokens.created',
+    'uses' => 'TokensController@store',
+]);
+
+Route::post('tokens/refresh', [
+    'as' => 'tokens.refresh',
+    'middleware' => 'jwt.refresh',
+    'uses' => function () {}
+]);
+
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:api');
+})->middleware('jwt.auth');
+
+DB::listen(function ($query) {
+    Log::info('query', [$query->sql]);
+});
+
+
