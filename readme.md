@@ -1,6 +1,6 @@
 # JWT 연습 프로젝트
 
-JWT의 작동 원리를 빠르게 이해하기 위한 프로젝트다. 서버 코드의 변경 내역은 커밋 로그를 참고한다.
+JWT의 작동 원리를 빠르게 이해하기 위한 프로젝트다. [JWT 관련 코드 변경 내역은 커밋 로그](https://github.com/appkr/jwt-scratchpad/commit/6276902db0b57539b2c9e1faf8c354fc1290a2e7)를 참고한다.
 
 ## 1. JWT 란?
 
@@ -49,12 +49,11 @@ JSON Web Token. 쿠키 메커니즘을 이용한 세션 유지를 할 수 없는
 ```sh
 ~ $ git clone git@github.com:appkr/jwt-scratchpad.git
 
-# 또는
-
+# 깃허브에 SSH 키를 등록하지 않았다면...
 ~ $ git clone https://github.com/appkr/jwt-scratchpad.git
 ```
 
-이 프로젝트가 의존하는 라이브러리를 설치한다.
+이 프로젝트가 의존하는 라이브러리를 설치하고, 프로젝트 설정 파일을 생성한다.
 
 ```sh
 # composer는 PHP의 표준 의존성 관리자다.
@@ -62,9 +61,10 @@ JSON Web Token. 쿠키 메커니즘을 이용한 세션 유지를 할 수 없는
 
 $ cd jwt-scratchpad
 ~/jwt-scratchpad $ composer install
+~/jwt-scratchpad $ cp .env.example .env
 ```
 
-이 프로젝트는 SQlite를 사용한다. `database/database.sqlite`를 이미 포함하고 있으므로 DB 생성 및 마이그레이션은 필요없다. 혹시 없다면 다음 코드 블록을 참고해서 만든다.
+이 프로젝트는 SQLite를 사용한다. `database/database.sqlite`를 이미 포함하고 있으므로 DB 생성 및 마이그레이션은 필요없다. 혹시 없다면 다음 코드 블록을 참고해서 만든다.
 
 ```sh
 ~/jwt-scratchpad $ touch database/database.sqlite
@@ -102,7 +102,20 @@ JWT 스펙을 이해하고 구현하기는 어렵다. 해서, 이 프로젝트�
 >>> $u->save();
 ```
 
-### 3.2. 테스트 클라이언트
+### 3.2. 테스트 서버 구동
+
+준비가 끝났으면 테스트를 위한 로컬 서버를 구동한다.
+ 
+```sh
+~/jwt-scratchpad $ php artisan serve --host=jwt-scratchpad.dev
+# Laravel development server started on http://jwt-scratchpad.dev:8000/ 
+
+# 라라벨 Valet 개발 서버를 이용한다면...
+~/jwt-scratchpad $ valet link
+# A [jwt-scratchpad] symbolic link has been created in [$HOME/.valet/Sites/jwt-scratchpad].
+```
+
+### 3.3. 테스트 클라이언트
 
 API를 호출하기 위한 클라이언트가 필요하다. 포스트맨 크롬 익스텐션을 사용한다. [없다면 여기서 설치한다.](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop)
 
@@ -110,7 +123,7 @@ API를 호출하기 위한 클라이언트가 필요하다. 포스트맨 크롬 
 
 ![](public/images/postman1.png)
 
-### 3.3. JWT 토큰 발급 요청
+### 3.4. JWT 토큰 발급 요청
 
 우리 시스템에는 John 사용자가 존재한다. John 사용자의 정보로 토큰을 요청해보자.
 
@@ -134,7 +147,7 @@ Content-Type: application/json
 
 현재 설정으로는(`config/jwt.php`의 `ttl`설정) 60분간 유효한 토큰이 발급된다. 60분 동안은 로그인 필요없이 토큰을 이용할 수 있으므로, 클라이언트는 자신의 로컬 저장소에 토큰을 저장해 두고 한동안 사용할 수 있다. 우리도 흉내내서 클립보드에 저장해두자(복사한다).
 
-### 3.4. 리소스 요청
+### 3.5. 리소스 요청
 
 3.3 절에서 발급받은 토큰으로 보호된 라우트를 요청해 보자. API 콜한다는 얘기다. 3.3 절에서 발급 받은 JWT 토큰은 `Authorization` HTTP 요청 헤더로 제출해야 한다.
 
@@ -153,7 +166,7 @@ Authorization: Bearer eyJ***.eyJ***.ZGS***
 
 우리의 토큰은 사용자의 아이디를 담고 있다. 처음 발급 받을 때, 우리의 JWT 컴포넌트는 라라벨의 캐시 저장소에 토큰과 사용자 아이디의 맵핑 테이블을 만들어 두었다. 말인즉슨, 토큰이 온전히 서버에 전달되어 해독된다면 사용자를 식별하기 위한 SQLite 쿼리는 필요없다는 얘기다. 세 번만 빨리 말해보자. '빠르다'. SQLite 쿼리를 감사하기 위한 코드는 [여기](https://github.com/appkr/jwt-scratchpad/blob/master/routes/api.php#L31)에 있으니, SQLite 쿼리가 발생하는지 확인해 보라. 쿼리 로그는 `storage/logs/laravel.log`에 저장된다.
 
-### 3.5. 토큰 리프레시 요청
+### 3.6. 토큰 리프레시 요청
 
 현재 설정은 토큰 유효 기간 60분, 리프레시 가능 기간 2주다. 60분이 지나면 기존 토큰으로 새 토큰을 교환 받을 수 있다. 그런데 주의할 점은 새 토큰을 장착했다고해서 리프레시 가능 기간이 다시 2주가 아니란 점이다. 2주는 최초 발급 시점으로 부터 2주란 뜻이며, 최초 토큰 발급 후 2주가 지나면 무조건 로그인 창을 띄우고 완전 새삥 토큰을 발급 받아야 한다.
 
