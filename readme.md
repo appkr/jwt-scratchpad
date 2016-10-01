@@ -64,7 +64,7 @@ $ cd jwt-scratchpad
 ~/jwt-scratchpad $ cp .env.example .env
 ```
 
-이 프로젝트는 SQLite를 사용한다. `database/database.sqlite`를 이미 포함하고 있으므로 DB 생성 및 마이그레이션은 필요없다. 혹시 없다면 다음 코드 블록을 참고해서 만든다.
+이 프로젝트는 SQLite를 사용한다. `database/database.sqlite`를 만들고 테이블을 생성한다.
 
 ```sh
 ~/jwt-scratchpad $ touch database/database.sqlite
