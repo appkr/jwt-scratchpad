@@ -18,7 +18,6 @@ class RefreshToken extends \Tymon\JWTAuth\Middleware\BaseMiddleware
     public function handle($request, Closure $next)
     {
         try {
-
             $newToken = $this->auth->setRequest($request)->parseToken()->refresh();
         } catch (TokenExpiredException $e) {
             return response()->json(

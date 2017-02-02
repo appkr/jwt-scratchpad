@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'user' => 'App\User',
+    'user' => App\User::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -133,7 +133,7 @@ return [
         |
         */
 
-        'user' => 'Tymon\JWTAuth\Providers\User\EloquentUserAdapter',
+        'user' => Tymon\JWTAuth\Providers\User\EloquentUserAdapter::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -144,7 +144,7 @@ return [
         |
         */
 
-        'jwt' => 'Tymon\JWTAuth\Providers\JWT\NamshiAdapter',
+        'jwt' => Tymon\JWTAuth\Providers\JWT\NamshiAdapter::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -155,7 +155,7 @@ return [
         |
         */
 
-        'auth' => 'Tymon\JWTAuth\Providers\Auth\IlluminateAuthAdapter',
+        'auth' => Tymon\JWTAuth\Providers\Auth\IlluminateAuthAdapter::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -166,7 +166,7 @@ return [
         |
         */
 
-        'storage' => 'Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter',
+        'storage' => Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter::class,
 
     ],
 

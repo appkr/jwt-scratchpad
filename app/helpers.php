@@ -1,5 +1,5 @@
 <?php
 
 function jwt() {
-    return app('tymon.jwt.auth');
+    return app(Tymon\JWTAuth\JWTAuth::class);
 }
